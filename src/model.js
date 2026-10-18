@@ -7,9 +7,9 @@ const BASE = process.env.MODEL_URL ?? 'http://localhost:11434';
 export const MODEL = process.env.MODEL_NAME ?? 'gemma4:latest';
 const KEY = process.env.MODEL_KEY;
 
-// USD per million tokens, used only for the usage meter. Local Ollama is free.
-const PRICE_IN = Number(process.env.MODEL_PRICE_IN ?? (API === 'ollama' ? 0 : 0.2));
-const PRICE_OUT = Number(process.env.MODEL_PRICE_OUT ?? (API === 'ollama' ? 0 : 0.6));
+// USD per million tokens, used only for the usage meter: DigitalOcean's Gemma 4 rate. Local Ollama is free.
+const PRICE_IN = Number(process.env.MODEL_PRICE_IN ?? (API === 'ollama' ? 0 : 0.18));
+const PRICE_OUT = Number(process.env.MODEL_PRICE_OUT ?? (API === 'ollama' ? 0 : 0.5));
 export const costOf = (tin, tout) => (tin * PRICE_IN + tout * PRICE_OUT) / 1e6;
 
 // Returns { data, tokensIn, tokensOut, ms }. `schema` is a JSON schema the reply must follow;
