@@ -236,7 +236,7 @@ function renderFields() {
     <div class="fcard ${s.max > 1000 ? 'big' : ''} ${k === 'keywords' ? 'kw' : ''}" data-field="${k}">
       <div class="fcard-head"><h4>${s.label}</h4><span class="count"></span><button class="copy" type="button" data-copy="${k}">Copy</button></div>
       <div class="meter"><i></i></div>
-      <textarea rows="1" spellcheck="true" aria-label="${s.label}">${esc(r.fields[k])}</textarea>
+      <textarea rows="1" spellcheck="${k !== 'keywords'}" ${k === 'keywords' ? 'wrap="off"' : ''} aria-label="${s.label}">${esc(r.fields[k])}</textarea>
       ${k === 'keywords' ? '<div class="kw-chips"></div>' : ''}
       <div class="issues">${r.issues.filter((i) => i.field === k).map((i) => `<div class="issue ${i.level}">${esc(i.text)}</div>`).join('')}</div>
     </div>`).join('');
@@ -254,7 +254,7 @@ function updateCard(card) {
   c.textContent = `${n}/${s.max}${s.bytes ? ' bytes' : ''}`; c.className = `count ${cls}`;
   const bar = card.querySelector('.meter i');
   bar.style.width = `${Math.min(100, (n / s.max) * 100)}%`; bar.className = cls;
-  ta.style.height = 'auto'; ta.style.height = `${ta.scrollHeight}px`;
+  ta.style.height = 'auto'; ta.style.height = `${ta.scrollHeight + (k === 'keywords' ? 8 : 0)}px`;
   if (k === 'keywords') card.querySelector('.kw-chips').innerHTML = ta.value.split(',').filter((t) => t.trim()).map((t) => `<span>${esc(t.trim())}</span>`).join('');
 }
 

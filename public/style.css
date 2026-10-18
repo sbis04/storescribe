@@ -195,7 +195,7 @@ form { display: grid; gap: 14px; }
 .copy { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 4px 10px; font-size: 12.5px; cursor: pointer; }
 .fcard textarea { width: 100%; border: 0; background: transparent; resize: none; outline: none; padding: 0; font-size: 15px; line-height: 1.55; overflow: hidden; display: block; }
 .fcard.big textarea { font-size: 14.5px; }
-.fcard.kw textarea { font-family: var(--mono); font-size: 13.5px; }
+.fcard.kw textarea { font-family: var(--mono); font-size: 13.5px; white-space: pre; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
 .kw-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
 .kw-chips span { font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 .issue { margin-top: 8px; font-size: 13px; display: flex; gap: 6px; align-items: baseline; }
