@@ -3,13 +3,14 @@
 # Needs: doctl (authenticated), an SSH key at $KEY, and ../.env with DATABASE_URL and MODEL_KEY.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-NAME=storescribe KEY=${KEY:-~/.ssh/leafpeep_ed25519} REGION=${REGION:-tor1} SIZE=${SIZE:-s-1vcpu-1gb}
+NAME=storescribe KEY=${KEY:-~/.ssh/leafpeep_ed25519} REGION=${REGION:-nyc3} SIZE=${SIZE:-s-1vcpu-1gb}
 SSH="ssh -i $KEY -o StrictHostKeyChecking=accept-new -o BatchMode=yes"
 grep -q '^MODEL_KEY=.\+' .env || { echo "Set MODEL_KEY in .env first"; exit 1; }
 
 IP=$(doctl compute droplet list --tag-name "$NAME" --format PublicIPv4 --no-header | head -1)
 if [[ -z "$IP" ]]; then
-  KEY_ID=$(doctl compute ssh-key list --format ID,Name --no-header | awk '$2=="storescribe-deploy"{print $1}')
+  FP=$(ssh-keygen -E md5 -lf "$KEY.pub" | awk '{print $2}' | sed 's/^MD5://')
+  KEY_ID=$(doctl compute ssh-key list --format ID,FingerPrint --no-header | awk -v fp="$FP" '$2==fp{print $1}')
   [[ -n "$KEY_ID" ]] || KEY_ID=$(doctl compute ssh-key import storescribe-deploy --public-key-file "$KEY.pub" --format ID --no-header)
   echo "Creating Droplet ($SIZE in $REGION)…"
   IP=$(doctl compute droplet create "$NAME" --region "$REGION" --size "$SIZE" --image ubuntu-24-04-x64 \
