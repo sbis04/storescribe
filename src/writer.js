@@ -7,7 +7,7 @@ import { meter } from './db.js';
 
 const STYLE = `Write like a sharp human copywriter, not an ad. Lead with what the person gets, in concrete words.
 Never use: revolutionary, seamless, unleash, elevate, game-changer, cutting-edge, "take it to the next level", "look no further".
-No em dashes. No ALL CAPS words. At most two emoji in a description, none elsewhere.
+No em dashes. No ALL CAPS words. Vary your words: don't repeat the same keyword over and over, stores penalise keyword stuffing. At most two emoji in a description, none elsewhere.
 Only state facts from the brief: never invent features, updates, numbers, awards or reviews.
 Never name or compare to competitor apps. Never claim "#1", "best", "free" or rankings in a name or subtitle.`;
 
@@ -200,7 +200,8 @@ export async function writeListing({ workspaceId, app, images, stores, locales, 
   const terms = await seedTerms(run, app);
   emit('terms', `Researching: ${terms.join(', ')}`, { terms });
   const rs = await research(run, stores, terms, country);
-  emit('research-done', serpEnabled ? 'Competitor research done' : 'No SerpApi key, so skipping competitor research', { research: rs });
+  emit('research-done', serpEnabled ? 'Competitor research done'
+    : process.env.STORESCRIBE_LOCAL ? 'Offline mode: no web searches, nothing leaves this machine' : 'No SerpApi key, so skipping competitor research', { research: rs });
 
   const results = [];
   for (const store of stores) {

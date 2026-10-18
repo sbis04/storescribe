@@ -157,6 +157,8 @@ async function runHosted() {
 
 async function runLocal() {
   process.env.STORESCRIBE_NO_DB = '1';
+  process.env.STORESCRIBE_LOCAL = '1';
+  delete process.env.SERPAPI_KEY; // --local promises nothing leaves the machine: no web searches either
   process.env.MODEL_API ??= 'ollama';
   process.env.MODEL_NAME ??= 'gemma4:latest';
   const { writeListing } = await import('../src/writer.js');
