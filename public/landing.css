@@ -86,3 +86,7 @@
 .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #3a3c46; }
 .term pre { margin: 0; white-space: pre; }
 .t-p { color: #8098ff; } .t-ok { color: #4cc27c; } .t-fix { color: #e2a64a; } .t-dim { color: #7c7a84; } .t-b { color: #fff; font-weight: 600; }
+
+.ghost-link { color: var(--ink); font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--accent-soft); padding-bottom: 2px; }
+.ghost-link:hover { border-color: var(--accent); }
+.cta .cta-note { flex-basis: 100%; }

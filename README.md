@@ -11,12 +11,12 @@
 
 <p align="center">
   <a href="https://storescribe.souvikbiswas.com"><b>Try it: storescribe.souvikbiswas.com</b></a> ·
-  <a href="docs/storescribe-demo.mp4">Demo video</a> ·
+  <a href="https://youtu.be/tMNuL2SRbiA">Demo video</a> ·
   <a href="#cli">CLI</a>
 </p>
 
 <p align="center">
-  <a href="docs/storescribe-demo.mp4"><img src="docs/img/thumbnail.jpg" width="720" alt="StoreScribe demo video"></a>
+  <a href="https://youtu.be/tMNuL2SRbiA"><img src="docs/img/thumbnail.jpg" width="720" alt="StoreScribe demo video"></a>
 </p>
 
 ## Why
