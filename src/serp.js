@@ -71,7 +71,7 @@ export function findRank(results, { storeId, name }) {
 }
 
 // Words that recur across competitors' names and blurbs: the vocabulary the category actually searches with.
-const STOP = new Set('the and for with your you app apps from that this are our all can get more into make made easy best free new one any use using keep time their them they helps help its it\'s also just like every what when where which who will have has been was were how than then out about over only each other through while'.split(' '));
+const STOP = new Set('the and for with your you app apps from that this are our all can get more into make made easy best free new one any use using keep time their them they helps help its it\'s also just like every what when where which who will have has been was were how than then out about over only each other through while see real around find whether information features watch device world right now need want lets let'.split(' '));
 export function commonTerms(results, exclude = []) {
   const skip = new Set(exclude.flatMap((e) => e.toLowerCase().split(/\W+/)));
   const freq = new Map();
