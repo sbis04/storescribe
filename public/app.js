@@ -17,6 +17,13 @@ $('themeBtn').onclick = () => {
 };
 
 // ---------- workspace: one per browser, no sign-up ----------
+// The CLI prints a link with its workspace in the hash, so its listings open here for editing.
+const handoff = new URLSearchParams(location.hash.slice(1));
+if (/^[0-9a-f-]{36}$/i.test(handoff.get('ws') ?? '')) {
+  store.set('ss.workspace', handoff.get('ws'));
+  if (handoff.get('app')) store.set('ss.lastApp', handoff.get('app'));
+  history.replaceState(null, '', location.pathname);
+}
 let ws = store.get('ss.workspace');
 if (!ws) { ws = crypto.randomUUID(); store.set('ss.workspace', ws); }
 const api = (path, opts = {}) => fetch(path, { ...opts, headers: { 'x-workspace': ws, ...(opts.body && !(opts.body instanceof FormData) && { 'content-type': 'application/json' }), ...opts.headers } });

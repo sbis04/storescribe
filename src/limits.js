@@ -32,6 +32,9 @@ const bytes = (s) => Buffer.byteLength(s, 'utf8');
 const chars = (s) => [...new Intl.Segmenter().segment(s)].length;
 export const lengthOf = (s, spec) => (spec.bytes ? bytes(s) : chars(s));
 
+// Everyday words that are naturally frequent and say nothing about keyword stuffing.
+const COMMON = new Set('your with that this from have more every they their them what when where which while will into than then just also each like make made keep about over only been were there here these those does need want ever even much many most some such very youre dont'.split(' '));
+
 // Google Play rejects these in titles, and both stores discourage them anywhere in name lines.
 const BANNED_IN_TITLES = /\b(free|best|#?1|no\.? ?1|top|sale|discount|download now|install now)\b/i;
 
@@ -44,7 +47,7 @@ export function packKeywords(terms, { name = '', subtitle = '', avoid = [], max 
   const seen = new Set();
   for (const raw of terms.flatMap((t) => String(t).split(','))) {
     const t = raw.trim().toLowerCase().replace(/\s+/g, ' ');
-    if (!t || seen.has(t) || taken.has(t)) continue;
+    if (!t || seen.has(t) || taken.has(t) || taken.has(t.replace(/s$/, ''))) continue;
     if (blocked.some((b) => b && (t.includes(b) || b.includes(t)) && t.length > 2)) continue; // competitor names
     const singular = t.replace(/s$/, '');
     if (seen.has(singular) || seen.has(`${t}s`)) continue;
@@ -80,11 +83,11 @@ export function lint(store, fields, { appName = '' } = {}) {
   if (store === 'ios' && fields.keywords && /,\s/.test(fields.keywords)) issues.push({ field: 'keywords', level: 'warn', text: 'Spaces after commas waste bytes' });
   const body = store === 'ios' ? fields.description : fields.full_description;
   if (body) {
-    const words = body.toLowerCase().match(/\p{L}{4,}/gu) ?? [];
+    const words = (body.toLowerCase().match(/\p{L}{4,}/gu) ?? []).filter((w) => !COMMON.has(w));
     const freq = {};
     for (const w of words) freq[w] = (freq[w] ?? 0) + 1;
     const [w, n] = Object.entries(freq).sort((a, b) => b[1] - a[1])[0] ?? [];
-    if (w && words.length > 80 && n / words.length > 0.04) issues.push({ field: store === 'ios' ? 'description' : 'full_description', level: 'warn', text: `"${w}" is ${Math.round((n / words.length) * 100)}% of the words; stores treat that as keyword stuffing` });
+    if (w && words.length > 60 && n / words.length > 0.04) issues.push({ field: store === 'ios' ? 'description' : 'full_description', level: 'warn', text: `"${w}" is ${Math.round((n / words.length) * 100)}% of the words; stores treat that as keyword stuffing` });
     if ((body.match(/\p{Extended_Pictographic}/gu) ?? []).length > 8) issues.push({ field: store === 'ios' ? 'description' : 'full_description', level: 'warn', text: 'Lots of emoji; Play may flag it as spammy' });
   }
   return issues;

@@ -26,6 +26,11 @@ const SCHEMAS = {
     required: ['title', 'short_description', 'full_description'],
   },
   fix: { type: 'object', properties: { text: str }, required: ['text'] },
+  brief: {
+    type: 'object',
+    properties: { pitch: str, details: str, audience: str, category: str, seed_terms: { type: 'array', items: str }, features: { type: 'array', items: str } },
+    required: ['pitch', 'details', 'audience', 'category', 'seed_terms', 'features'],
+  },
 };
 
 // A run accumulates tokens so the whole job is metered as one line per step.
@@ -47,6 +52,25 @@ features: up to 8 short phrases, each a concrete capability visible in the scree
 look: one sentence on the visual style.
 Reply with JSON only.`, { schema: SCHEMAS.screens, images, temperature: 0.2, maxTokens: 500 });
   return { features: (data.features ?? []).slice(0, 8), look: data.look ?? '' };
+}
+
+// From a scanned repo (README, screen names, current listing) to the same brief the web form collects.
+export async function briefFromRepo(run, app, context) {
+  run.emit('brief', 'Reading the project');
+  const { data } = await run.ask('brief', `Below is what was found in a mobile app's source code repository. Write the brief a store-listing copywriter needs.
+Only use facts present below. Ignore build steps, licences, contributors and developer tooling.
+pitch: one line, at most 120 characters, what the app does for the person using it.
+details: up to 600 characters: the main features and what makes it different, in plain words.
+audience: who it's for, a few words.
+category: the App Store category it belongs in, one or two words.
+seed_terms: 3 short phrases (1 to 3 words) people would type into the App Store to find this kind of app. Not the app's name.
+features: up to 8 short phrases, each a concrete thing a user can do, taken from the screens and README.
+
+App name: ${app.name}
+${context}
+
+Reply with JSON only.`, { schema: SCHEMAS.brief, temperature: 0.2, maxTokens: 900 });
+  return data;
 }
 
 export async function seedTerms(run, app) {
@@ -158,7 +182,21 @@ Reply with JSON only, same keys${store === 'ios' ? ' plus keyword_candidates' : 
 // Runs the whole job and returns { research, screens, results: [{ store, locale, fields, issues }] }.
 export async function writeListing({ workspaceId, app, images, stores, locales, country = 'us', emit = () => {} }) {
   const run = new Run(workspaceId, emit);
+  let brief;
+  if (app.context) {
+    brief = await briefFromRepo(run, app, app.context);
+    app = {
+      ...app,
+      pitch: app.pitch || brief.pitch || '',
+      details: app.details || brief.details || '',
+      audience: app.audience || brief.audience || '',
+      category: app.category || brief.category || '',
+      seed_terms: app.seed_terms?.length ? app.seed_terms : (brief.seed_terms ?? []).map((t) => t.toLowerCase().trim()).filter(Boolean).slice(0, 3),
+    };
+    emit('brief-done', `Pitch: ${app.pitch}`, { brief: { ...brief, pitch: app.pitch } });
+  }
   const screens = await readScreens(run, images);
+  if (brief?.features?.length) screens.features = [...new Set([...screens.features, ...brief.features])].slice(0, 10);
   const terms = await seedTerms(run, app);
   emit('terms', `Researching: ${terms.join(', ')}`, { terms });
   const rs = await research(run, stores, terms, country);
@@ -180,5 +218,5 @@ export async function writeListing({ workspaceId, app, images, stores, locales, 
       } catch (err) { emit('error', `${LOCALES[locale]} failed: ${err.message}`); }
     }
   }
-  return { screens, terms, research: rs, results, model: MODEL, tokensIn: run.tin, tokensOut: run.tout, cost: costOf(run.tin, run.tout) };
+  return { app, brief, screens, terms, research: rs, results, model: MODEL, tokensIn: run.tin, tokensOut: run.tout, cost: costOf(run.tin, run.tout) };
 }

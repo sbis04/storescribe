@@ -28,7 +28,11 @@ export async function ensureWorkspace(id) {
   await pool.query('INSERT INTO workspaces (id) VALUES ($1) ON CONFLICT DO NOTHING', [id]);
 }
 
+// The CLI's --local mode runs with no database at all.
+export const noDb = process.env.STORESCRIBE_NO_DB === '1';
+
 export async function meter(workspaceId, kind, { tokensIn = 0, tokensOut = 0, searches = 0, cost = 0 } = {}) {
+  if (noDb) return;
   await pool.query(
     'INSERT INTO usage (workspace_id, kind, tokens_in, tokens_out, searches, cost_usd) VALUES ($1,$2,$3,$4,$5,$6)',
     [workspaceId, kind, tokensIn, tokensOut, searches, cost],

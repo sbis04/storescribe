@@ -56,7 +56,9 @@ app.post('/api/generate', workspace, upload.array('screens', 5), async (req, res
   const b = req.body;
   const name = String(b.name ?? '').trim().slice(0, 30);
   const pitch = String(b.pitch ?? '').trim().slice(0, 200);
-  if (!name || !pitch) return res.status(400).json({ error: 'Add your app name and a one-line pitch' });
+  // The CLI sends what it found in the app's repo instead of a hand-written pitch.
+  const context = String(b.context ?? '').slice(0, 12000);
+  if (!name || (!pitch && !context)) return res.status(400).json({ error: 'Add your app name and a one-line pitch' });
   const stores = [].concat(b.stores ?? ['ios', 'android']).filter((s) => STORES[s]);
   const locales = [...new Set(['en-US', ...[].concat(b.locales ?? []).filter((l) => LOCALES[l])])].slice(0, MAX_LOCALES);
   if (!stores.length) return res.status(400).json({ error: 'Pick at least one store' });
@@ -99,14 +101,13 @@ app.post('/api/generate', workspace, upload.array('screens', 5), async (req, res
   send('app', { id: appRow.id });
   try {
     const out = await writeListing({
-      workspaceId: req.ws, app: appRow, images, stores, locales,
+      workspaceId: req.ws, app: { ...appRow, context }, images, stores, locales,
       emit: (step, message, data) => send('step', { step, message, ...data }),
     });
-    if (out.screens.features.length && !b.app_id) {
-      await pool.query('UPDATE apps SET features = $2 WHERE id = $1', [appRow.id, out.screens.features.join('; ')]);
-    }
+    await pool.query('UPDATE apps SET features = $2, pitch = $3, details = $4, audience = $5, category = $6, seed_terms = $7 WHERE id = $1',
+      [appRow.id, out.screens.features.join('; '), out.app.pitch.slice(0, 200), out.app.details.slice(0, 1500), out.app.audience.slice(0, 200), out.app.category.slice(0, 60), out.terms]);
     const version = await saveVersion(appRow.id, out.results, out.research, out.model, out);
-    send('done', { version, research: out.research, results: out.results, terms: out.terms, cost: out.cost, tokensIn: out.tokensIn, tokensOut: out.tokensOut });
+    send('done', { version, appId: appRow.id, brief: out.brief, research: out.research, results: out.results, terms: out.terms, cost: out.cost, tokensIn: out.tokensIn, tokensOut: out.tokensOut });
   } catch (err) {
     console.error(err);
     send('fail', { error: 'The writer hit a problem. Try again in a minute.' });

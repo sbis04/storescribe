@@ -1,6 +1,6 @@
 // Competitor research and rank checks through SerpApi's App Store and Google Play engines.
 // Every search is cached in the database for a day: SerpApi's free plan is a few hundred searches a month.
-import { pool } from './db.js';
+import { pool, noDb } from './db.js';
 
 const KEY = process.env.SERPAPI_KEY;
 export const serpEnabled = Boolean(KEY);
@@ -9,7 +9,7 @@ const TTL_HOURS = 24;
 // Returns [{ position, id, title, developer, rating, reviews, description, icon }] for the top results.
 export async function searchStore(store, term, country = 'us') {
   const q = term.trim().toLowerCase();
-  const { rows } = await pool.query(
+  const { rows } = noDb ? { rows: [] } : await pool.query(
     `SELECT results FROM serp_cache WHERE store = $1 AND term = $2 AND country = $3 AND fetched_at > now() - make_interval(hours => $4)`,
     [store, q, country, TTL_HOURS],
   );
@@ -24,7 +24,7 @@ export async function searchStore(store, term, country = 'us') {
   const j = await res.json();
   if (j.error) throw new Error(`SerpApi: ${j.error}`);
   const results = (store === 'ios' ? parseApple(j) : parsePlay(j)).slice(0, 15);
-  await pool.query(
+  if (!noDb) await pool.query(
     `INSERT INTO serp_cache (store, term, country, results) VALUES ($1, $2, $3, $4)
      ON CONFLICT (store, term, country) DO UPDATE SET results = EXCLUDED.results, fetched_at = now()`,
     [store, q, country, JSON.stringify(results)],
