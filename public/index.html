@@ -26,6 +26,7 @@
     </a>
     <nav class="nav">
       <a href="#how">How it works</a>
+      <a href="#cli">CLI</a>
       <a href="#open">Why open</a>
       <a href="#pricing">Pricing</a>
       <a class="primary small" href="/app">Open the app</a>
@@ -71,6 +72,33 @@
         <li><span>3</span><h3>It writes, then checks</h3><p>Gemma 4 drafts each field. Code checks every limit and store rule, and anything that doesn't fit is rewritten until it does.</p></li>
         <li><span>4</span><h3>You ship it</h3><p>Edit with live counters, keep every version, export straight to fastlane, then track where you rank, day by day.</p></li>
       </ol>
+    </section>
+
+    <section class="cli" id="cli">
+      <div>
+        <h2>Or run it in your repo</h2>
+        <p>Skip the form. Run one command inside your app's project and StoreScribe reads it for you: the app name and bundle ids, the README, the screens in your code, your current store listing and your screenshots. The finished listing lands in <code>fastlane/metadata</code>, ready to upload.</p>
+        <ul>
+          <li>Works with Flutter, React Native, Expo, Swift and Kotlin projects</li>
+          <li>Add <code>--local</code> to run Gemma on your own machine with Ollama. Nothing leaves your laptop.</li>
+        </ul>
+      </div>
+      <div class="term" aria-label="Terminal running npx storescribe">
+        <div class="term-bar"><i></i><i></i><i></i></div>
+<pre><span class="t-p">~/aerotail $</span> npx storescribe --local --langs ja-JP
+
+<span class="t-ok">✓</span> <span class="t-b">AeroTail</span> <span class="t-dim">(Flutter, iOS, Android)</span>
+<span class="t-dim">  read 4 files, 6 screens in the code</span>
+• Reading the project
+<span class="t-ok">✓</span> Pitch: Track aircraft flying near you in real time
+• Writing the App Store listing
+<span class="t-fix">↺</span> Subtitle is 43/30, tightening it
+<span class="t-ok">✓</span> App Store listing ready
+<span class="t-ok">✓</span> Japanese ready
+<span class="t-ok">✓</span> Done in 81 s <span class="t-dim">· free, ran on this machine</span>
+
+<span class="t-ok">✓</span> Wrote 16 files to <span class="t-b">fastlane/metadata</span></pre>
+      </div>
     </section>
 
     <section class="open" id="open">

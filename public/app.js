@@ -76,7 +76,12 @@ function newApp() {
   state.app = null; state.results = []; store.set('ss.lastApp', '');
   $('form').reset(); $('appId').value = ''; state.shots = []; renderThumbs(); limitLocales();
   $('result').hidden = true; $('empty').hidden = false; $('intro').hidden = false;
+  document.querySelector('.layout').classList.remove('has-result', 'editing');
 }
+$('editToggle').onclick = () => {
+  const open = document.querySelector('.layout').classList.toggle('editing');
+  $('editToggle').setAttribute('aria-expanded', String(open));
+};
 
 // ---------- screenshots ----------
 $('screens').onchange = (e) => addShots(e.target.files);
@@ -106,6 +111,7 @@ $('form').onsubmit = async (e) => {
   for (const s of state.shots) fd.append('screens', s.file, s.file.name);
   $('go').disabled = true; $('go').querySelector('span').textContent = 'Writing…';
   $('empty').hidden = true; $('result').hidden = true; $('progress').hidden = false;
+  document.querySelector('.layout').classList.remove('has-result', 'editing');
   $('progressTitle').textContent = `Writing ${fd.get('name')}'s listing…`;
   $('steps').innerHTML = '';
   if (innerWidth < 960) $('progress').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -174,6 +180,10 @@ async function openApp(id, version) {
   if (!stores.includes(state.store)) state.store = stores[0] ?? 'ios';
   if (!d.results.some((r) => r.store === state.store && r.locale === state.locale)) state.locale = 'en-US';
   $('empty').hidden = true; $('progress').hidden = true; $('intro').hidden = true; $('result').hidden = false;
+  document.querySelector('.layout').classList.add('has-result');
+  document.querySelector('.layout').classList.remove('editing');
+  $('editToggle').setAttribute('aria-expanded', 'false');
+  $('editSummary').textContent = `${d.app.name} · ${[...new Set(d.results.map((r) => r.locale))].length} languages`;
   render();
   renderVersions();
   loadRanks();
@@ -286,7 +296,7 @@ function renderPreview() {
   const r = current(); if (!r) return;
   const f = r.fields;
   const ios = r.store === 'ios';
-  const shots = state.shots.length ? state.shots.map((s) => `<img src="${s.url}" alt="">`).join('') : '<div class="ph"></div><div class="ph"></div><div class="ph"></div>';
+  const shots = state.shots.length ? state.shots.map((s) => `<img src="${s.url}" alt="">`).join('') : '<div class="shots-hint">Add screenshots in the form to see them here</div>';
   $('preview').className = `store-preview ${ios ? 'ios' : 'android'}`;
   $('preview').innerHTML = `
     <div class="sp-store">${ios ? 'App Store preview' : 'Google Play preview'}</div>
