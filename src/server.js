@@ -238,6 +238,9 @@ app.get('/api/usage', workspace, async (req, res) => {
   res.json({ ...rows[0], model: MODEL });
 });
 
+process.on('unhandledRejection', (err) => console.error('unhandled:', err));
+process.on('exit', (code) => console.error(`server exiting with code ${code}`));
+
 await migrate();
 const PORT = Number(process.env.PORT ?? 8080);
 app.listen(PORT, () => console.log(`StoreScribe on http://localhost:${PORT} (model ${MODEL}${serpEnabled ? ', SerpApi on' : ''})`));

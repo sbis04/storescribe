@@ -13,6 +13,9 @@ export const pool = new pg.Pool({
   max: 5,
 });
 
+// An idle connection dropped by the network must not take the server down with it.
+pool.on('error', (err) => console.error('database connection error:', err.message));
+
 export async function migrate() {
   const sql = await readFile(new URL('../db/schema.sql', import.meta.url), 'utf8');
   for (let i = 1; ; i++) {
