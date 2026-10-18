@@ -1,0 +1,13 @@
+{$SITE} {
+	encode zstd gzip
+	request_body {
+		max_size 45MB
+	}
+	reverse_proxy app:8080 {
+		flush_interval -1
+	}
+}
+
+{$ALT_SITE} {
+	redir https://{$SITE}{uri} 308
+}

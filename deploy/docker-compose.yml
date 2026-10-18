@@ -1,0 +1,26 @@
+# StoreScribe on one DigitalOcean Droplet: HTTPS proxy + the app.
+# Data lives in Tiger Cloud (DATABASE_URL); the model is Gemma 4 on DigitalOcean serverless inference (MODEL_*).
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    environment:
+      SITE: ${SITE:?set SITE in .env}
+      ALT_SITE: ${ALT_SITE:-http://unused.invalid:81}
+    depends_on: [app]
+
+  app:
+    build: ..
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      PORT: 8080
+      NODE_ENV: production
+      TRUST_PROXY: "1"
+
+volumes:
+  caddy_data:
