@@ -62,9 +62,12 @@ export async function scanRepo(root) {
     const n = first(s, /<key>CFBundleDisplayName<\/key>\s*<string>([^<$]+)<\/string>/);
     if (n) { ctx.name ??= n; note(f); }
   }
+  // The app's own bundle id is the shortest one that isn't a test, widget, watch or extension target.
   for (const f of find(/project\.pbxproj$/).slice(0, 2)) {
-    const id = first(await read(f), /PRODUCT_BUNDLE_IDENTIFIER = "?([\w.-]+)"?;/);
-    if (id && !/tests?$|Tests|\$\(/i.test(id)) { ctx.iosId ??= id; ctx.kind.includes('iOS') || ctx.kind.push('iOS'); }
+    const ids = [...(await read(f) ?? '').matchAll(/PRODUCT_BUNDLE_IDENTIFIER = "?([\w.-]+)"?;/g)].map((m) => m[1])
+      .filter((id) => !/tests?$|uitests|watch|widget|extension|intent|notification|clip|\$\(/i.test(id))
+      .sort((a, b) => a.length - b.length);
+    if (ids[0]) { ctx.iosId ??= ids[0]; ctx.kind.includes('iOS') || ctx.kind.push('iOS'); }
   }
   // Android: label and application id
   for (const f of find(/(^|\/)res\/values\/strings\.xml$/).slice(0, 3)) {
@@ -114,9 +117,17 @@ export async function scanRepo(root) {
   const candidates = [
     ...find(/fastlane\/screenshots\/(en-US\/)?/i).filter((f) => shotRe.test(f)),
     ...find(/(^|\/)(screenshots?|store|assets\/store|docs\/(img|images|screenshots))\//i).filter((f) => shotRe.test(f)),
+    // Marketing sites and onboarding art in the repo show the app too.
+    ...find(/(^|\/)(website|site|web|landing|docs)\/.*(hero|screen|shot|preview|mock)[^/]*\.(png|jpe?g)$/i),
+    ...find(/(onboarding|walkthrough)[^/]*\.(png|jpe?g)$/i).filter((f) => !/icon/i.test(f)),
   ];
-  const sized = await Promise.all([...new Set(candidates)].map(async (f) => ({ f, size: (await stat(f)).size })));
-  ctx.screenshots = sized.filter((x) => x.size > 30_000).sort((a, b) => b.size - a.size).slice(0, 5).map((x) => x.f);
+  // Portrait, phone-shaped images first (real screens), then by size.
+  const sharp = (await import('sharp')).default;
+  const sized = await Promise.all([...new Set(candidates)].map(async (f) => {
+    const m = await sharp(f).metadata().catch(() => ({}));
+    return { f, size: (await stat(f)).size, tall: (m.height ?? 0) / (m.width ?? 1) > 1.6 };
+  }));
+  ctx.screenshots = sized.filter((x) => x.size > 30_000).sort((a, b) => (b.tall - a.tall) || (b.size - a.size)).slice(0, 5).map((x) => x.f);
   return ctx;
 }
 
