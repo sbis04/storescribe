@@ -16,10 +16,19 @@ export const costOf = (tin, tout) => (tin * PRICE_IN + tout * PRICE_OUT) / 1e6;
 // `images` are JPEG buffers for the vision step.
 export async function ask(prompt, { schema, images = [], temperature = 0.4, maxTokens = 2000 } = {}) {
   const t0 = Date.now();
+  // OpenAI-compatible endpoints only promise "some JSON", so name the exact keys in the prompt.
+  if (schema && API === 'openai') {
+    prompt += `\nThe JSON object must use exactly these keys: ${schema.required.map((k) => `"${k}"${schema.properties[k].type === 'array' ? ' (array of strings)' : ''}`).join(', ')}.`;
+  }
   const r = API === 'openai'
     ? await viaOpenAI(prompt, images, temperature, maxTokens)
     : await viaOllama(prompt, schema, images, temperature, maxTokens);
-  return { data: JSON.parse(extractJson(r.text)), tokensIn: r.tin, tokensOut: r.tout, ms: Date.now() - t0 };
+  if (process.env.MODEL_DEBUG) console.error('[model]', r.tout, r.text.slice(0, 400));
+  let data = JSON.parse(extractJson(r.text));
+  // Some replies wrap everything in one outer key ({"listing": {...}}); unwrap it.
+  const vals = Object.values(data);
+  if (schema && vals.length === 1 && vals[0] && typeof vals[0] === 'object' && !Array.isArray(vals[0]) && !(schema.required[0] in data)) data = vals[0];
+  return { data, tokensIn: r.tin, tokensOut: r.tout, ms: Date.now() - t0 };
 }
 
 async function viaOllama(prompt, schema, images, temperature, maxTokens) {
