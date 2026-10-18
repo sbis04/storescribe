@@ -33,7 +33,7 @@ const bold = c(1), dim = c(2), green = c(32), yellow = c(33), red = c(31), blue 
 if (opt.help) {
   console.log(`${bold('storescribe')}: App Store and Google Play listings from your app's repo
 
-  ${bold('Usage')}  npx storescribe [dir] [options]
+  ${bold('Usage')}  npx github:sbis04/storescribe [dir] [options]
 
   --langs ja-JP,de-DE    languages besides English (up to 5)
   --stores ios,android   which stores (default both)
