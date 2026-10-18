@@ -30,7 +30,7 @@ const html = async (file, res) => {
 };
 app.get(['/', '/index.html'], (_req, res) => html('index.html', res));
 app.get(['/app', '/app.html'], (_req, res) => html('app.html', res));
-app.use(express.static('public', { maxAge: '7d', index: false }));
+app.use(express.static('public', { maxAge: process.env.NODE_ENV === 'production' ? '7d' : 0, index: false }));
 
 // ---------- workspace (one per browser, no sign-up) ----------
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

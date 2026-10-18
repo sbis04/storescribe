@@ -181,9 +181,10 @@ async function openApp(id, version) {
 
 function fillForm(a) {
   const f = $('form');
+  const el = f.elements;
   $('appId').value = a.id;
-  f.name.value = a.name; f.pitch.value = a.pitch; f.details.value = a.details;
-  f.category.value = a.category; f.audience.value = a.audience; f.seed_terms.value = (a.seed_terms ?? []).join(', ');
+  el.name.value = a.name; el.pitch.value = a.pitch; el.details.value = a.details;
+  el.category.value = a.category; el.audience.value = a.audience; el.seed_terms.value = (a.seed_terms ?? []).join(', ');
   const locs = new Set(state.results.map((r) => r.locale));
   for (const b of f.querySelectorAll('input[name=locales]')) b.checked = locs.has(b.value);
   const st = new Set(state.results.map((r) => r.store));
