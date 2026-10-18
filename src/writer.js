@@ -143,15 +143,25 @@ Reply with JSON only.`;
   return data;
 }
 
+// In a name, subtitle or short line, saying the same word twice wastes precious characters ("planes & planes").
+function repeated(v, s) {
+  if (s.max > 200) return null;
+  const words = v.toLowerCase().match(/\p{L}{3,}/gu) ?? [];
+  const seen = new Set();
+  for (const w of words) { const base = w.replace(/s$/, ''); if (seen.has(base)) return w; seen.add(base); }
+  return null;
+}
+
 // Ask the model to shorten anything over its limit; after two tries, cut cleanly in code.
 async function enforce(run, store, fields, app, locale, avoid, keywordCandidates) {
   const spec = STORES[store].fields;
   for (const [k, s] of Object.entries(spec)) {
     if (k === 'keywords') continue;
     let v = String(fields[k] ?? '').trim();
-    for (let tries = 0; tries < 2 && lengthOf(v, s) > s.max; tries++) {
-      run.emit('fix', `${s.label} is ${lengthOf(v, s)}/${s.max}, tightening it`);
-      const { data } = await run.ask('fix', `Rewrite this ${s.label.toLowerCase()} for the ${STORES[store].label} in ${LOCALES[locale]}, keeping the meaning and any app name, in at most ${Math.floor(s.max * 0.92)} characters. It is currently ${lengthOf(v, s)}.
+    for (let tries = 0; tries < 2 && (lengthOf(v, s) > s.max || repeated(v, s)); tries++) {
+      const dup = repeated(v, s);
+      run.emit('fix', dup && lengthOf(v, s) <= s.max ? `${s.label} repeats "${dup}", rewording it` : `${s.label} is ${lengthOf(v, s)}/${s.max}, tightening it`);
+      const { data } = await run.ask('fix', `Rewrite this ${s.label.toLowerCase()} for the ${STORES[store].label} in ${LOCALES[locale]}, keeping the meaning and any app name, in at most ${Math.floor(s.max * 0.92)} characters, without repeating any word. It is currently ${lengthOf(v, s)}.
 Text: ${v}
 Reply with JSON only: {"text": "..."}`, { schema: SCHEMAS.fix, temperature: 0.3, maxTokens: s.max > 200 ? 1800 : 120 });
       v = String(data.text ?? v).trim();
