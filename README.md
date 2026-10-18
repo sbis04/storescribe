@@ -27,20 +27,33 @@ StoreScribe studies the apps you're up against, then writes both listings inside
 
 ## Screenshots
 
-<table>
-  <tr>
-    <td width="66%"><img src="docs/img/app-desktop.png" alt="The listing for AeroTail with live character counters and a store preview"></td>
-    <td width="34%"><img src="docs/img/app-phone.png" alt="StoreScribe on a phone"></td>
-  </tr>
-  <tr>
-    <td><img src="docs/img/app-japanese.png" alt="The Japanese listing with its own keywords, 91 of 100 bytes"></td>
-    <td><img src="docs/img/app-phone-dark.png" alt="Dark mode on a phone, keywords packed to the byte"></td>
-  </tr>
-  <tr>
-    <td><img src="docs/img/app-research.png" alt="Competitor research: top App Store apps and the category's vocabulary"></td>
-    <td><img src="docs/img/cli.png" alt="The CLI writing fastlane metadata from a repo"></td>
-  </tr>
-</table>
+**Your listing, inside every limit.** A live App Store preview with your screenshots, and a counter on every field.
+
+<img src="docs/img/listing-en.png" alt="The App Store listing for AeroTail with a store preview and live character counters">
+
+**Each language gets its own keywords.** Apple counts the keywords field in bytes, so Japanese gets about a third of the room; this one uses 91 of 100.
+
+<img src="docs/img/listing-ja.png" alt="The Japanese App Store listing for AeroTail">
+
+**What you're up against.** The top apps for your search terms, and which of the category's words made it into your listing.
+
+<img src="docs/img/research.png" alt="Competitor research: Flightradar24, FlightAware, Flighty and others, with the category vocabulary">
+
+**Google Play** gets its own title, short description and full description.
+
+<img src="docs/img/listing-play.png" alt="The Google Play listing for AeroTail">
+
+**Or run it in your repo.** The CLI reads the project and writes `fastlane/metadata`.
+
+<img src="docs/img/cli.png" alt="The CLI reading the AeroTail repo and writing 24 fastlane files">
+
+**On your phone**, in light and dark.
+
+<p>
+  <img src="docs/img/app-phone.png" width="300" alt="StoreScribe on a phone">
+  &nbsp;
+  <img src="docs/img/app-phone-dark.png" width="300" alt="StoreScribe on a phone, dark mode">
+</p>
 
 ## What it does
 

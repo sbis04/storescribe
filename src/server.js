@@ -4,7 +4,7 @@ import sharp from 'sharp';
 import { pool, migrate, ensureWorkspace, meter, hit, countHits } from './db.js';
 import { writeListing } from './writer.js';
 import { STORES, LOCALES, lint, lengthOf, packKeywords } from './limits.js';
-import { searchStore, findRank, serpEnabled } from './serp.js';
+import { searchStore, findRank, serpEnabled, commonTerms } from './serp.js';
 import { MODEL } from './model.js';
 
 const BUILD = Date.now().toString(36);
@@ -152,6 +152,8 @@ app.get('/api/apps/:id', workspace, async (req, res) => {
   const { rows: results } = v ? await pool.query(
     `SELECT store, locale, fields, issues, research, time FROM listing_versions WHERE app_id = $1 AND version = $2 ORDER BY store = 'ios' DESC, locale = 'en-US' DESC, locale`,
     [a.id, v]) : { rows: [] };
+  // Recompute the category vocabulary from the saved competitors, so older versions get today's filtering.
+  for (const r of results) if (r.research?.competitors) r.research.common = commonTerms(r.research.competitors);
   res.json({ app: a, versions, version: v, results });
 });
 
