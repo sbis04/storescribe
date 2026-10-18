@@ -4,6 +4,9 @@ import { pool, noDb } from './db.js';
 
 const KEY = process.env.SERPAPI_KEY;
 export const serpEnabled = Boolean(KEY);
+// SerpApi keys are 64 hex characters. SearchApi.io keys (24 characters) work too: same engines, same result shape.
+const SEARCHAPI = Boolean(KEY) && !/^[0-9a-f]{64}$/i.test(KEY);
+export const searchProvider = !KEY ? null : SEARCHAPI ? 'SearchApi' : 'SerpApi';
 const TTL_HOURS = 24;
 
 // Returns [{ position, id, title, developer, rating, reviews, description, icon }] for the top results.
@@ -18,11 +21,12 @@ export async function searchStore(store, term, country = 'us') {
 
   const params = store === 'ios'
     ? { engine: 'apple_app_store', term: q, country, num: '15' }
-    : { engine: 'google_play', store: 'apps', q, gl: country, hl: 'en' };
-  const res = await fetch(`https://serpapi.com/search.json?${new URLSearchParams({ ...params, api_key: KEY })}`);
-  if (!res.ok) throw new Error(`SerpApi ${res.status}`);
+    : { engine: SEARCHAPI ? 'google_play_store' : 'google_play', store: 'apps', q, gl: country, hl: 'en' };
+  const base = SEARCHAPI ? 'https://www.searchapi.io/api/v1/search' : 'https://serpapi.com/search.json';
+  const res = await fetch(`${base}?${new URLSearchParams({ ...params, api_key: KEY })}`);
+  if (!res.ok) throw new Error(`${searchProvider} ${res.status}`);
   const j = await res.json();
-  if (j.error) throw new Error(`SerpApi: ${j.error}`);
+  if (j.error) throw new Error(`${searchProvider}: ${j.error}`);
   const results = (store === 'ios' ? parseApple(j) : parsePlay(j)).slice(0, 15);
   if (!noDb) await pool.query(
     `INSERT INTO serp_cache (store, term, country, results) VALUES ($1, $2, $3, $4)
@@ -41,7 +45,7 @@ function parseApple(j) {
     rating: r.rating?.[0]?.rating ?? r.rating ?? null,
     reviews: r.rating?.[0]?.count ?? null,
     description: (r.description ?? '').slice(0, 600),
-    icon: r.logos?.[0]?.link ?? r.icon ?? null,
+    icon: r.logos?.[0]?.link ?? r.logos?.link ?? r.icon ?? null,
   }));
 }
 
@@ -67,7 +71,7 @@ export function findRank(results, { storeId, name }) {
 }
 
 // Words that recur across competitors' names and blurbs: the vocabulary the category actually searches with.
-const STOP = new Set('the and for with your you app apps from that this are our all can get more into make made easy best free new one any use using'.split(' '));
+const STOP = new Set('the and for with your you app apps from that this are our all can get more into make made easy best free new one any use using keep time their them they helps help its it\'s also just like every what when where which who will have has been was were how than then out about over only each other through while'.split(' '));
 export function commonTerms(results, exclude = []) {
   const skip = new Set(exclude.flatMap((e) => e.toLowerCase().split(/\W+/)));
   const freq = new Map();
