@@ -29,6 +29,7 @@ const html = async (file, res) => {
   res.set('cache-control', 'no-cache').type('html').send(page);
 };
 app.get(['/', '/index.html'], (_req, res) => html('index.html', res));
+app.get(['/app', '/app.html'], (_req, res) => html('app.html', res));
 app.use(express.static('public', { maxAge: '7d', index: false }));
 
 // ---------- workspace (one per browser, no sign-up) ----------
@@ -148,7 +149,7 @@ app.get('/api/apps/:id', workspace, async (req, res) => {
      FROM listing_versions WHERE app_id = $1 GROUP BY version ORDER BY version DESC`, [a.id]);
   const v = Number(req.query.version) || versions[0]?.version;
   const { rows: results } = v ? await pool.query(
-    `SELECT store, locale, fields, issues, research, time FROM listing_versions WHERE app_id = $1 AND version = $2 ORDER BY store, locale = 'en-US' DESC, locale`,
+    `SELECT store, locale, fields, issues, research, time FROM listing_versions WHERE app_id = $1 AND version = $2 ORDER BY store = 'ios' DESC, locale = 'en-US' DESC, locale`,
     [a.id, v]) : { rows: [] };
   res.json({ app: a, versions, version: v, results });
 });

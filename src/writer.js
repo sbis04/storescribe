@@ -8,6 +8,7 @@ import { meter } from './db.js';
 const STYLE = `Write like a sharp human copywriter, not an ad. Lead with what the person gets, in concrete words.
 Never use: revolutionary, seamless, unleash, elevate, game-changer, cutting-edge, "take it to the next level", "look no further".
 No em dashes. No ALL CAPS words. At most two emoji in a description, none elsewhere.
+Only state facts from the brief: never invent features, updates, numbers, awards or reviews.
 Never name or compare to competitor apps. Never claim "#1", "best", "free" or rankings in a name or subtitle.`;
 
 const str = { type: 'string' };
@@ -63,7 +64,7 @@ export async function research(run, stores, terms, country = 'us') {
     const seen = new Map();
     let searches = 0;
     for (const term of terms) {
-      run.emit('research', `Searching ${STORES[store].label} for "${term}"`);
+      if (serpEnabled) run.emit('research', `Searching ${STORES[store].label} for "${term}"`);
       try {
         const { results, cached } = await searchStore(store, term, country);
         if (!cached && serpEnabled) searches++;
@@ -100,7 +101,7 @@ ${briefOf(app, screens, rs)}
 Write the listing in English (US). Hard limits, counted in characters:
 - name: at most ${f.name.max}. Start with "${app.name}", then a short keyword phrase if it fits (e.g. "${app.name}: Budget Planner").
 - subtitle: at most ${f.subtitle.max}. A benefit, with a search keyword not already in the name.
-- promotional_text: at most ${f.promotional_text.max}. What's new or timely; one or two sentences.
+- promotional_text: at most ${f.promotional_text.max}. One or two sentences that make someone want it today. Only describe what the app already does: never invent updates, new features or offers.
 - description: 1200 to 2500 characters. A strong first two lines (they show before "more"), then short paragraphs and a few "•" bullets of real features. Plain text, no markdown, no headings with #.
 - keyword_candidates: 20 single words or short phrases people search for, most valuable first. Do not repeat words from the name or subtitle. No competitor names.
 ${STYLE}

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>StoreScribe</title>
+  <meta name="description" content="App Store and Google Play listings written by an open model, researched against your competitors, inside every character limit, in up to six languages.">
+  <meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121214" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="/style.css?v=BUILD">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/" aria-label="StoreScribe home page">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="8" fill="var(--accent)"/><path d="M10 21.5c2 1.3 4 1.8 6 1.8 3.2 0 5.2-1.5 5.2-3.8 0-2.2-1.6-3.1-4.6-3.8l-1.4-.3c-1.7-.4-2.4-.9-2.4-1.8 0-1 1-1.7 2.6-1.7 1.4 0 2.8.5 4 1.4" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span>StoreScribe</span>
+    </a>
+    <div class="top-right">
+      <button class="pill" id="usagePill" type="button" hidden></button>
+      <select id="appPicker" aria-label="Your apps" hidden></select>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ---------- input ---------- -->
+    <section class="panel form-panel" aria-labelledby="formTitle">
+      <div class="intro" id="intro">
+        <h1 id="formTitle">Store listings that fit, rank and read well.</h1>
+        <p>Describe your app and drop in a few screenshots. An open model studies the apps you're up against, then writes your App Store and Google Play listings inside every limit, in up to six languages.</p>
+      </div>
+
+      <form id="form" autocomplete="off">
+        <input type="hidden" name="app_id" id="appId">
+        <div class="row2">
+          <label class="field">
+            <span>App name</span>
+            <input name="name" id="fName" maxlength="30" required placeholder="Splitly">
+          </label>
+          <label class="field">
+            <span>Category <em>optional</em></span>
+            <input name="category" maxlength="60" placeholder="Finance">
+          </label>
+        </div>
+        <label class="field">
+          <span>One-line pitch</span>
+          <input name="pitch" id="fPitch" maxlength="200" required placeholder="Split bills with roommates and settle up without awkward reminders">
+        </label>
+        <label class="field">
+          <span>What else should it know? <em>optional</em></span>
+          <textarea name="details" rows="3" maxlength="1500" placeholder="Features, what makes it different, tone of voice…"></textarea>
+        </label>
+        <div class="row2">
+          <label class="field">
+            <span>Who it's for <em>optional</em></span>
+            <input name="audience" maxlength="200" placeholder="Students sharing a flat">
+          </label>
+          <label class="field">
+            <span>Search terms <em>optional</em></span>
+            <input name="seed_terms" maxlength="120" placeholder="split bills, roommate expenses">
+          </label>
+        </div>
+
+        <div class="field">
+          <span>Screenshots <em>up to 5, read by the model, never stored</em></span>
+          <label class="drop" id="drop">
+            <input type="file" id="screens" accept="image/*" multiple>
+            <span class="drop-hint"><b>Add screenshots</b> or drop them here</span>
+            <div class="thumbs" id="thumbs"></div>
+          </label>
+        </div>
+
+        <fieldset class="field">
+          <legend>Stores</legend>
+          <div class="toggles">
+            <label class="toggle"><input type="checkbox" name="stores" value="ios" checked><span>App Store</span></label>
+            <label class="toggle"><input type="checkbox" name="stores" value="android" checked><span>Google Play</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>Languages <em id="langCount">English + up to 5</em></legend>
+          <div class="chips" id="langs"></div>
+        </fieldset>
+
+        <button class="primary" id="go" type="submit">
+          <span>Write my listing</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <p class="fine" id="modelNote"></p>
+      </form>
+    </section>
+
+    <!-- ---------- output ---------- -->
+    <section class="output" id="output" aria-live="polite">
+      <div class="empty" id="empty">
+        <div class="empty-art" aria-hidden="true">
+          <div class="mock-phone"><i></i><b></b><b class="s"></b><span></span><span></span><span class="s"></span></div>
+        </div>
+        <h2>Your listing shows up here</h2>
+        <ul class="how">
+          <li><b>Researches</b> the top apps for your search terms on both stores</li>
+          <li><b>Writes</b> name, subtitle, keywords and description with Gemma 4</li>
+          <li><b>Checks</b> every limit and store rule, and fixes what doesn't fit</li>
+          <li><b>Localizes</b> for each market, keywords included</li>
+        </ul>
+      </div>
+
+      <div class="progress" id="progress" hidden>
+        <h2 id="progressTitle">Writing your listing…</h2>
+        <ol id="steps"></ol>
+      </div>
+
+      <div id="result" hidden>
+        <div class="result-head">
+          <div>
+            <h2 id="resultTitle"></h2>
+            <p class="meta" id="resultMeta"></p>
+          </div>
+          <div class="result-actions">
+            <button class="ghost" id="exportBtn" type="button">Export for fastlane</button>
+            <button class="ghost" id="copyAllBtn" type="button">Copy all</button>
+          </div>
+        </div>
+
+        <div class="tabs" role="tablist" id="storeTabs"></div>
+        <div class="locales" id="localeTabs"></div>
+
+        <div class="split">
+          <div class="preview-col">
+            <div class="store-preview" id="preview"></div>
+          </div>
+          <div class="fields-col">
+            <div id="fields"></div>
+            <div class="save-row" id="saveRow" hidden>
+              <span>You've edited this listing.</span>
+              <button class="primary small" id="saveBtn" type="button">Save as new version</button>
+            </div>
+          </div>
+        </div>
+
+        <section class="card" id="researchCard">
+          <h3>What you're up against</h3>
+          <p class="sub" id="researchSub"></p>
+          <div class="vocab" id="vocab"></div>
+          <ol class="competitors" id="competitors"></ol>
+        </section>
+
+        <div class="grid2">
+          <section class="card">
+            <h3>Versions</h3>
+            <p class="sub">Every draft and edit is kept. Open any one to compare or reuse it.</p>
+            <ol class="versions" id="versions"></ol>
+          </section>
+          <section class="card" id="rankCard">
+            <h3>Rank tracker</h3>
+            <p class="sub">Once you're live, check where you show up for the terms you're targeting. One point a day.</p>
+            <form class="rank-form" id="rankForm">
+              <select id="rankStore" aria-label="Store"><option value="ios">App Store</option><option value="android">Google Play</option></select>
+              <input id="rankTerms" placeholder="split bills, rent tracker" aria-label="Search terms">
+              <button class="ghost" type="submit">Check now</button>
+            </form>
+            <div id="rankChart" class="rank-chart"></div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Written by <b id="footModel">Gemma 4</b>, an open-weight model. Data on Tiger Data, hosted on DigitalOcean.</span>
+    <a href="https://github.com/sbis04/storescribe">Source on GitHub</a>
+  </footer>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+  <script src="/app.js?v=BUILD" type="module"></script>
+</body>
+</html>

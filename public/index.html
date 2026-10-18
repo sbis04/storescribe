@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>StoreScribe</title>
+  <meta name="description" content="App Store and Google Play listings that fit every limit, use the words your category searches with, and read like a person wrote them. In up to six languages, written by an open model.">
+  <meta property="og:title" content="StoreScribe: store listings that fit, rank and read well">
+  <meta property="og:description" content="Describe your app, add screenshots, get App Store and Google Play listings in six languages. Written by Gemma 4, an open model.">
+  <meta property="og:image" content="/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121214" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="/style.css?v=BUILD">
+  <link rel="stylesheet" href="/landing.css?v=BUILD">
+</head>
+<body class="landing">
+  <header class="top">
+    <a class="brand" href="/" aria-label="StoreScribe home page">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="8" fill="var(--accent)"/><path d="M10 21.5c2 1.3 4 1.8 6 1.8 3.2 0 5.2-1.5 5.2-3.8 0-2.2-1.6-3.1-4.6-3.8l-1.4-.3c-1.7-.4-2.4-.9-2.4-1.8 0-1 1-1.7 2.6-1.7 1.4 0 2.8.5 4 1.4" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span>StoreScribe</span>
+    </a>
+    <nav class="nav">
+      <a href="#how">How it works</a>
+      <a href="#open">Why open</a>
+      <a href="#pricing">Pricing</a>
+      <a class="primary small" href="/app">Open the app</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">For indie app developers</p>
+        <h1>Your app is done.<br>Now write the <span class="hl">store listing</span>.</h1>
+        <p class="lede">StoreScribe studies the apps you're up against, then writes your App Store and Google Play listings inside every character limit, with the words your category actually searches for. In English and five more languages, in about two minutes.</p>
+        <div class="cta">
+          <a class="primary" href="/app">Write my listing
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <span class="cta-note">Free while in beta. No sign-up.</span>
+        </div>
+      </div>
+
+      <div class="hero-demo" aria-label="Example: a listing StoreScribe wrote">
+        <div class="demo-card">
+          <div class="demo-row"><span class="demo-k">App name</span><span class="demo-v">Splitly: Bill Splitter</span><span class="count ok">22/30</span></div>
+          <div class="demo-row"><span class="demo-k">Subtitle</span><span class="demo-v">Track Shared Expenses</span><span class="count ok">21/30</span></div>
+          <div class="demo-row"><span class="demo-k">Keywords</span><span class="demo-v mono">expense tracker,roommate bills,shared costs,utility splitting…</span><span class="count ok">90/100 B</span></div>
+          <div class="demo-row ja"><span class="demo-k">日本語</span><span class="demo-v">Splitly: 割り勘管理</span><span class="count ok">14/30</span></div>
+          <div class="demo-row ja"><span class="demo-k">キーワード</span><span class="demo-v mono">割り勘,家賃 分担,共同生活費,出費 管理…</span><span class="count near">97/100 B</span></div>
+          <div class="demo-fix"><b>Fixed automatically:</b> the first subtitle was 40/30 characters, so it was rewritten to fit.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pains">
+      <div><b>30 characters.</b><p>That's your whole app name and subtitle. Every word has to earn its place and still read naturally.</p></div>
+      <div><b>100 bytes, not characters.</b><p>Apple's keyword field counts bytes, so Japanese gets about a third of the room. Most tools don't notice.</p></div>
+      <div><b>Six languages, six markets.</b><p>People in Tokyo don't search with translated English words. Each language gets its own keywords.</p></div>
+    </section>
+
+    <section class="how-sec" id="how">
+      <h2>How it works</h2>
+      <ol class="steps4">
+        <li><span>1</span><h3>Tell it about your app</h3><p>Name, a one-line pitch and a few screenshots. The model reads the screenshots to see what your app really does.</p></li>
+        <li><span>2</span><h3>It researches the category</h3><p>It pulls the top App Store and Google Play results for your search terms and finds the words they all use.</p></li>
+        <li><span>3</span><h3>It writes, then checks</h3><p>Gemma 4 drafts each field. Code checks every limit and store rule, and anything that doesn't fit is rewritten until it does.</p></li>
+        <li><span>4</span><h3>You ship it</h3><p>Edit with live counters, keep every version, export straight to fastlane, then track where you rank, day by day.</p></li>
+      </ol>
+    </section>
+
+    <section class="open" id="open">
+      <div class="open-copy">
+        <h2>Why an open model</h2>
+        <p>A listing isn't written once. You rewrite it for every update, every season, every new market. That only works as a cheap subscription if each draft costs almost nothing.</p>
+        <ul>
+          <li><b>A fraction of a cent per listing.</b> StoreScribe runs Gemma 4, an open-weight model, on DigitalOcean. Six languages for both stores costs less than a cent to generate.</li>
+          <li><b>Your unreleased app stays yours.</b> Screenshots are read and thrown away. You can run the whole thing on your own laptop with Ollama, so nothing leaves your machine.</li>
+          <li><b>No lock-in.</b> The model is one setting. Swap in a bigger open model, or fine-tune one on your best-converting listings.</li>
+        </ul>
+      </div>
+      <div class="open-stat">
+        <div class="stat"><b id="statCost">&lt; $0.01</b><span>model cost for a full listing in six languages</span></div>
+        <div class="stat"><b>0</b><span>screenshots stored</span></div>
+        <div class="stat"><b>100%</b><span>open source, MIT licensed</span></div>
+      </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+      <h2>Pricing</h2>
+      <p class="sub center">It's free during the beta. Here's the plan after that.</p>
+      <div class="plans">
+        <div class="plan">
+          <h3>Free</h3><div class="price">$0</div>
+          <ul><li>1 app</li><li>English + 2 languages</li><li>Live limit checks and fastlane export</li></ul>
+        </div>
+        <div class="plan featured">
+          <h3>Indie</h3><div class="price">$6<small>/month</small></div>
+          <ul><li>5 apps, unlimited drafts</li><li>English + 13 languages</li><li>Competitor research on both stores</li><li>Daily rank tracking</li></ul>
+        </div>
+        <div class="plan">
+          <h3>Studio</h3><div class="price">$19<small>/month</small></div>
+          <ul><li>Unlimited apps</li><li>Everything in Indie</li><li>Run it on your own server</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="final">
+      <h2>Two minutes to a listing you'd be proud to ship.</h2>
+      <a class="primary" href="/app">Write my listing</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Written by <b>Gemma 4</b>, an open-weight model. Data on <b>Tiger Data</b>, hosted on <b>DigitalOcean</b>.</span>
+    <a href="https://github.com/sbis04/storescribe">Source on GitHub</a>
+  </footer>
+</body>
+</html>
