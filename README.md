@@ -3,7 +3,7 @@
 App Store and Google Play listings that fit every limit, use the words your category searches with, and read like a person wrote them. In English and up to five more languages. Written by **Gemma 4**, an open-weight model.
 
 - **Web app:** describe your app, add screenshots, get both listings with live character counters, versions, fastlane export and a rank tracker.
-- **CLI:** run `npx storescribe` inside your app's repo. It reads the project (name, bundle ids, README, screens in the code, current fastlane listing, screenshots) and writes `fastlane/metadata` for you. Add `--local` to run Gemma on your own machine with Ollama, so nothing leaves your laptop.
+- **CLI:** run `npx github:sbis04/storescribe` inside your app's repo. It reads the project (name, bundle ids, README, screens in the code, current fastlane listing, screenshots) and writes `fastlane/metadata` for you. Add `--local` to run Gemma on your own machine with Ollama, so nothing leaves your laptop.
 
 ## How it works
 
@@ -33,8 +33,8 @@ CLI:
 
 ```sh
 cd path/to/your-app
-npx storescribe --langs ja-JP,de-DE          # hosted
-npx storescribe --local --dry-run            # Gemma on this machine, print only
+npx github:sbis04/storescribe --langs ja-JP,de-DE          # hosted
+npx github:sbis04/storescribe --local --dry-run            # Gemma on this machine, print only
 ```
 
 ## License

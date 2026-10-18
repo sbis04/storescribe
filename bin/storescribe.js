@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // StoreScribe CLI: run it inside your app's repo. It reads the project, writes the listing, and saves it as fastlane metadata.
-//   npx storescribe                       uses the hosted StoreScribe (competitor research included)
-//   npx storescribe --local               runs Gemma on your machine through Ollama; nothing leaves your laptop
+//   npx github:sbis04/storescribe         uses the hosted StoreScribe (competitor research included)
+//   npx github:sbis04/storescribe --local runs Gemma on your machine through Ollama; nothing leaves your laptop
 import { parseArgs } from 'node:util';
 import { mkdir, writeFile, readFile, access } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
